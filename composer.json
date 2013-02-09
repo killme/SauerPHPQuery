@@ -1,0 +1,7 @@
+{
+    "name": "graphox/sauerbraten-query",
+	"description":"Extinfo library for sauerbraten.",
+    "autoload": {
+        "classmap": ["lib/"]
+    }
+}
