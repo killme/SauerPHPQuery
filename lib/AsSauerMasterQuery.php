@@ -30,10 +30,12 @@ class AsSauerMasterQuery {
 			}
 
 			$temporaryServers = explode("\n", $temporaryServers);
+			$temporaryServer = new AsSauerQuery();
+			
 			foreach ($temporaryServers as $Server)
 			{
 				$Server = explode(":", $Server);
-				array_push($this->servers, new AsSauerServer($Server[0], $Server[1]));
+				array_push($this->servers, $temporaryServer->query($Server[0], $Server[1]));
 			}
 			
 		} catch (AsIOException $e) {
