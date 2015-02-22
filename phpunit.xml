@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true">
+    <testsuites>
+        <testsuite name="SauerPHPQuery Test Suite">
+            <directory>./lib/Test/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
