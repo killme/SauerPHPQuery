@@ -12,6 +12,25 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         parent::__construct();
     }
 
+    public function testBuffer()
+    {
+        $buf = new \Killme\SauerPHPQuery\Protocol\Buffer;
+
+        $this->assertTrue($buf->isEmpty());
+
+        for($i = -255; $i <= 427819; $i++)
+        {
+            $buf->putByte($i);
+            $this->assertEquals($i & 255, $buf->getByte());
+            $this->assertTrue($buf->isEmpty());
+
+            $buf->putInt($i);
+            $this->assertTrue(!$buf->isEmpty());
+            $this->assertEquals($i, $buf->getInteger($i));
+            $this->assertTrue($buf->isEmpty());
+        }
+    }
+
     /**
      * TODO: properly unit test
      */
@@ -27,5 +46,14 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         echo 'took ',($total).PHP_EOL;
 
         print_r($server2);
+
+        $class = new SauerbratenQueryManager;
+
+
+        $pslServer = new Server('crowd.gg', 28786);
+
+        $server2 = $class->query($pslServer);
+        print_r($server2);
+
     }
 }

@@ -64,7 +64,12 @@ class BaseQueryManager
         while(($cn = $buffer->getInteger()) != -11)
         {
             $players[$cn] = array();
-            print_r($cn, $players);
+        }
+
+        if(!$buffer->isEmpty())
+        {
+            $p = $this->parsePlayerPacket($buffer);
+            $players[$p['cn']] = $p;
         }
 
         return $players;
@@ -97,6 +102,34 @@ class BaseQueryManager
         $info['serverDescription'] = $buffer->getString();
 
         return $info;
+    }
+
+    protected function parsePlayerPacket(Buffer $buf)
+    {
+        // Should be -11 TODO: make sure it is
+        /*print_r(*/$buf->getInteger()/*)*/;
+        //assert($buf->getInteger() == -11);
+        return array(
+            'cn' => $buf->getInteger(),
+            'ping' => $buf->getInteger(),
+            'name' => $buf->getString(),
+            'team' => $buf->getString(),
+            'frags' => $buf->getInteger(),
+            'flags' => $buf->getInteger(),
+            'deaths' => $buf->getInteger(),
+            'teamkills' => $buf->getInteger(),
+            'accuracy' => $buf->getInteger(),
+            'health' => $buf->getInteger(),
+            'dummy_should_be_0' => assert(0 == $buf->getInteger()) ? null : null,
+            'gunselect' => $buf->getInteger(),
+            'privilege' => $buf->getInteger(), // CHECK YOUR PRIVILEGE !!!
+            'state' => $buf->getInteger(),
+            'ip' => array(
+                $buf->getInteger(),
+                $buf->getInteger(),
+                $buf->getInteger(),
+            ),
+        );
     }
 
     public function parseQuery(Server $server)

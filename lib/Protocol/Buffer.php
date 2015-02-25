@@ -42,13 +42,18 @@ class Buffer
         if($c === NULL)
             throw new \UnderflowException('buffer is empty.');
 
-        if ($c == 0x80)
+        if ($c == (-128 & 0xFF))
         {
             $n = $this->getByte();
             $n |= $this->getByte() << 8;
+
+            if(($n & 0x8000) == 0x8000)
+            {
+                $n |= (~0 & ~0xFFFF);
+            }
             return $n;
         }
-        else if ($c == 0x81)
+        elseif ($c == (-127 & 0xFF))
         {
             $n = $this->getByte();
             $n |= $this->getByte() << 8;
@@ -56,9 +61,9 @@ class Buffer
             $n |= $this->getByte() << 24;
             return $n;
         }
-        else if ($c & 128)
+        elseif(($c & 0x80) == 0x80)
         {
-            $c = -(((~$c) & 255) +1);
+            $c |= (~0 & ~0xFF);
         }
 
         return $c;
@@ -75,9 +80,31 @@ class Buffer
         }
     }
 
+    public function putByte($value)
+    {
+        $this->stack[] = $value & 255;
+    }
+
     public function putInt($value)
     {
-        $this->stack[] = $value;
+        if($value < 128 && $value > -127)
+        {
+            $this->putByte($value);
+        }
+        else if($value < 0x8000 && $value >= -0x8000)
+        {
+            $this->putByte(0x80);
+            $this->putByte($value);
+            $this->putByte($value >> 8);
+        }
+        else
+        {
+            $this->putByte(0x81);
+            $this->putByte($value);
+            $this->putByte($value >> 8);
+            $this->putByte($value >> 16);
+            $this->putByte($value >> 24);
+        }
     }
 
     public function pack($format)

@@ -18,7 +18,7 @@ class Connection
 
     public function query($buffer)
     {
-        stream_set_timeout($this->_connection, 0, 100000);
+        stream_set_timeout($this->_connection, 1);
         stream_get_contents($this->_connection); //clear
         fwrite($this->_connection, $buffer);
 
