@@ -62,13 +62,6 @@ class BaseQueryManager
             return array();
         }
 
-        $buff2 = new Buffer($buffer->stack);
-
-        while(!$buff2->isEmpty())
-        {
-            print("- " . $buff2->getInteger() . "\n");
-        }
-
         $players = array();
 
         if($buffer->isEmpty()) {
