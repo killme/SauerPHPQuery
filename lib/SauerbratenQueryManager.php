@@ -54,6 +54,8 @@ class SauerbratenQueryManager extends BaseQueryManager
                     case 2: $queryData['timeLeft'] = $v; break;
                     case 3: $queryData['maxClients'] = $v; break;
                     case 4: $queryData['serverMode'] = $this->parseServerMode($v); break;
+                    case 5: $queryData['gamePaused'] = $v != 0; break;
+                    case 6: $queryData['gameSpeed'] = $v; break;
                     default:
                         throw new \RuntimeException("Invalid extinfo attribute: ".$k);
                         break;
