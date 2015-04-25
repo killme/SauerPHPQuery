@@ -32,6 +32,11 @@ class Buffer
 
     public function getByte()
     {
+        if($this->isEmpty())
+        {
+            throw new \IndexOutOfBoundsException("Buffer is empty.");
+        }
+
         return array_shift($this->stack);
     }
 

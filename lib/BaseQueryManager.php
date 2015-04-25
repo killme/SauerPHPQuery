@@ -53,23 +53,44 @@ class BaseQueryManager
             throw new \InvalidArgumentException("Invalid client number.");
         }
 
-        assert($buffer->getInteger() == -10);
+        if($buffer->getInteger() != -10)
+        {
+            throw new \InvalidArgumentException("Failed to parse protocol.");
+        }
 
         if($buffer->isEmpty()) {
             return array();
         }
 
+        $buff2 = new Buffer($buffer->stack);
+
+        while(!$buff2->isEmpty())
+        {
+            print("- " . $buff2->getInteger() . "\n");
+        }
+
         $players = array();
 
-        while(($cn = $buffer->getInteger()) != -11)
+        if($buffer->isEmpty()) {
+            throw new \InvalidArgumentException("Permature packet end.");
+        }
+
+        while(!$buffer->isEmpty())
         {
-            $players[$cn] = array();
+            $p = $this->parsePlayerPacket($buffer);
+            print_r($p);
+            $players[$p['cn']] = $p;
         }
 
         if(!$buffer->isEmpty())
         {
-            $p = $this->parsePlayerPacket($buffer);
-            $players[$p['cn']] = $p;
+            do
+            {
+                print($buffer->getInteger() . "\n");
+            }
+            while(!$buffer->isEmpty());
+
+            throw new \InvalidArgumentException("Garbage data in parse.");
         }
 
         return $players;
@@ -87,7 +108,10 @@ class BaseQueryManager
         $buffer = $connection->query(
             $buffer->pack('c'));
 
-        assert($buffer->getInteger() == 1);
+        if($buffer->getInteger() != 1)
+        {
+            throw new \InvalidArgumentException("Failed to parse server info.");
+        }
 
         $info['playerCount'] = $buffer->getInteger();
         $attrCount = $buffer->getInteger();
@@ -106,9 +130,22 @@ class BaseQueryManager
 
     protected function parsePlayerPacket(Buffer $buf)
     {
-        // Should be -11 TODO: make sure it is
-        /*print_r(*/$buf->getInteger()/*)*/;
-        //assert($buf->getInteger() == -11);
+        while(!$buf->isEmpty())
+        {
+            if( $buf->getInteger() == 0 && $buf->getInteger() == 1 &&
+                $buf->getInteger() == -1 && $buf->getInteger() == -1 &&
+                $buf->getInteger() == 105 && $buf->getInteger() == 0  &&
+                $buf->getInteger() == -11)
+            {
+                break;
+            }
+        }
+
+        if($buf->isEmpty())
+        {
+            return;
+        }
+
         return array(
             'cn' => $buf->getInteger(),
             'ping' => $buf->getInteger(),
@@ -120,14 +157,14 @@ class BaseQueryManager
             'teamkills' => $buf->getInteger(),
             'accuracy' => $buf->getInteger(),
             'health' => $buf->getInteger(),
-            'dummy_should_be_0' => assert(0 == $buf->getInteger()) ? null : null,
+            'armour' => $buf->getInteger(),
             'gunselect' => $buf->getInteger(),
             'privilege' => $buf->getInteger(), // CHECK YOUR PRIVILEGE !!!
             'state' => $buf->getInteger(),
             'ip' => array(
-                $buf->getInteger(),
-                $buf->getInteger(),
-                $buf->getInteger(),
+                $buf->getByte(),
+                $buf->getByte(),
+                $buf->getByte(),
             ),
         );
     }

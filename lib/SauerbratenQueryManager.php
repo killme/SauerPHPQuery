@@ -43,18 +43,21 @@ class SauerbratenQueryManager extends BaseQueryManager
     {
         $queryData = $server->getQueryData();
 
-        foreach($queryData['attr'] as $k => $v)
+        if(isset($queryData['attr']))
         {
-            switch($k)
+            foreach($queryData['attr'] as $k => $v)
             {
-                case 0: $queryData['protocolVersion'] = $v; break;
-                case 1: $queryData['gameMode'] = $this->parseGamemode($v); break;
-                case 2: $queryData['timeLeft'] = $v; break;
-                case 3: $queryData['maxClients'] = $v; break;
-                case 4: $queryData['serverMode'] = $this->parseServerMode($v); break;
-                default:
-                    throw new \RuntimeException("Invalid extinfo attribute: ".$k);
-                    break;
+                switch($k)
+                {
+                    case 0: $queryData['protocolVersion'] = $v; break;
+                    case 1: $queryData['gameMode'] = $this->parseGamemode($v); break;
+                    case 2: $queryData['timeLeft'] = $v; break;
+                    case 3: $queryData['maxClients'] = $v; break;
+                    case 4: $queryData['serverMode'] = $this->parseServerMode($v); break;
+                    default:
+                        throw new \RuntimeException("Invalid extinfo attribute: ".$k);
+                        break;
+                }
             }
         }
 
