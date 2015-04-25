@@ -34,7 +34,7 @@ class Buffer
     {
         if($this->isEmpty())
         {
-            throw new \IndexOutOfBoundsException("Buffer is empty.");
+            throw new \Exception("Buffer is empty.");
         }
 
         return array_shift($this->stack);
