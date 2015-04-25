@@ -39,7 +39,8 @@ class BaseQueryManager
         $buffer = $connection->query(
             $buffer->pack('ccc'));
 
-        if($buffer->isEmpty()) {
+        if($buffer->isEmpty())
+        {
             return array();
         }
 
@@ -48,9 +49,16 @@ class BaseQueryManager
         assert($buffer->getInteger() == $cn);
         assert($buffer->getInteger() == -1);
         assert($buffer->getInteger() == 105);
-        if($buffer->getInteger() != 0)
+
+        if($buffer->isEmpty())
         {
-            throw new \InvalidArgumentException("Invalid client number.");
+            // ?
+            return array();
+        }
+
+        if(($error = $buffer->getInteger()) != 0)
+        {
+            throw new \InvalidArgumentException("Invalid client number. (Errorcode: " . $error . ")");
         }
 
         if($buffer->getInteger() != -10)
@@ -58,13 +66,16 @@ class BaseQueryManager
             throw new \InvalidArgumentException("Failed to parse protocol.");
         }
 
-        if($buffer->isEmpty()) {
+        if($buffer->isEmpty())
+        {
+            // ?
             return array();
         }
 
         $players = array();
 
-        if($buffer->isEmpty()) {
+        if($buffer->isEmpty())
+        {
             throw new \InvalidArgumentException("Permature packet end.");
         }
 
@@ -100,6 +111,11 @@ class BaseQueryManager
 
         $buffer = $connection->query(
             $buffer->pack('c'));
+
+        if($buffer->isEmpty())
+        {
+            return array();
+        }
 
         if($buffer->getInteger() != 1)
         {
